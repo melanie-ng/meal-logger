@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Meal Logger</string>
+    <string name="food">Food</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="meals">Meal:\u0020</string>
+    <string name="snacks">Snacks:\u0020</string>
+    <string name="total_calories">Total Calories:\u0020</string>
+    <string name="logs">Logs:\u0020</string>
+    <string name="no_meals_were_logged">No meals were logged</string>
+    <string name="go">Go</string>
+    <string name="cal">\u0020Cal</string>
+    <string name="at">\u0020at\u0020</string>
+    <string name="zero">0</string>
 </resources>

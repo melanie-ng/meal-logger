@@ -6,13 +6,130 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dateField"
+        style="?attr/textInputOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="@string/date"
+        app:helperTextEnabled="true"
+        app:helperText="YYYY-MM-DD"
+        app:layout_constraintEnd_toStartOf="@+id/btnGo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/dateFieldEditText"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btnGo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:text="@string/go"
+        app:layout_constraintBottom_toBottomOf="@+id/dateField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dateField" />
+
+    <TextView
+        android:id="@+id/mealsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/meals"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateField" />
+
+    <TextView
+        android:id="@+id/numOfMeals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/zero"
+        app:layout_constraintStart_toEndOf="@+id/mealsLabel"
+        app:layout_constraintTop_toTopOf="@+id/mealsLabel" />
+
+    <TextView
+        android:id="@+id/snacksLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/snacks"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mealsLabel" />
+
+    <TextView
+        android:id="@+id/numOfSnacks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/zero"
+        app:layout_constraintStart_toEndOf="@+id/snacksLabel"
+        app:layout_constraintTop_toTopOf="@+id/snacksLabel" />
+
+    <TextView
+        android:id="@+id/caloriesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/total_calories"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/snacksLabel" />
+
+    <TextView
+        android:id="@+id/totalCalories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/zero"
+        app:layout_constraintStart_toEndOf="@+id/caloriesLabel"
+        app:layout_constraintTop_toBottomOf="@+id/snacksLabel" />
+
+    <TextView
+        android:id="@+id/caloriesUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cal"
+        app:layout_constraintStart_toEndOf="@+id/totalCalories"
+        app:layout_constraintTop_toBottomOf="@+id/snacksLabel" />
+
+    <TextView
+        android:id="@+id/logsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/logs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/caloriesLabel" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mealLogs"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/logsLabel" />
 
+    <TextView
+        android:id="@+id/noMealLogs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/no_meals_were_logged"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logsLabel" />
 </androidx.constraintlayout.widget.ConstraintLayout>
