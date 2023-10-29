@@ -1,6 +1,7 @@
 package com.example.meallogger
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import java.sql.Date
 import java.sql.Time
@@ -60,6 +62,13 @@ class MainActivity : AppCompatActivity() {
             if (!hasFocus) {
                 hideKeyboard(view)
             }
+        }
+
+        // floating action button that redirects user to Add Meal Log form
+        val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
+        fab.setOnClickListener {
+            val i = Intent(this, AddMealActivity::class.java)
+            startActivity(i)
         }
     }
 

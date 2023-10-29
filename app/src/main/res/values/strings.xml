@@ -1,13 +1,19 @@
 <resources>
     <string name="app_name">Meal Logger</string>
     <string name="food">Food:\u0020</string>
+    <string name="food_form_label">Food</string>
     <string name="date">Date:\u0020</string>
+    <string name="date_form_label">Date</string>
     <string name="time">Time:\u0020</string>
+    <string name="time_form_label">Time</string>
     <string name="meals">Meal:\u0020</string>
     <string name="snacks">Snacks:\u0020</string>
     <string name="category">Category:\u0020</string>
+    <string name="category_form_label">Category</string>
     <string name="note">Note:\u0020</string>
+    <string name="note_form_label">Note</string>
     <string name="calories">Calories:\u0020</string>
+    <string name="calories_form_label">Calories</string>
     <string name="total_calories">Total Calories:\u0020</string>
     <string name="logs">Logs:\u0020</string>
     <string name="no_meals_were_logged">No meals were logged</string>
@@ -16,4 +22,8 @@
     <string name="cal">\u0020Cal</string>
     <string name="at">\u0020at\u0020</string>
     <string name="zero">0</string>
+    <string-array name="category_array">
+        <item>Meal</item>
+        <item>Snack</item>
+    </string-array>
 </resources>
