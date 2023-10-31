@@ -1,10 +1,17 @@
 package com.example.meallogger
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-import java.sql.Date
-import java.sql.Time
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Parcelize
-data class MealLog(val food: String, val date: Date, val time: Time, val calories: Int,
-                   val unit: String, val category: String, val note: String): Parcelable {}
+@Entity(tableName = "meal_log_table")
+data class MealLog(
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    @ColumnInfo(name = "food") val food: String,
+    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "time") val time: String,
+    @ColumnInfo(name = "calories") val calories: Int,
+    @ColumnInfo(name = "unit") val unit: String,
+    @ColumnInfo(name = "category") val category: String,
+    @ColumnInfo(name = "note") val note: String?
+) {}
