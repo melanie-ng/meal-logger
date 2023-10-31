@@ -4,18 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 private const val ARG_MEAL = "meal"
+private const val ARG_VIEW_MODEL = "vm"
 
 class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
     private var meal: MealLog? = null
+    private var mealLogViewModel: MealLogViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             meal = it.getParcelable(ARG_MEAL)
+            mealLogViewModel = it.getSerializable(ARG_VIEW_MODEL) as MealLogViewModel
         }
     }
 
@@ -43,16 +47,25 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
             noteValue.text = meal?.note.toString()
         }
 
+        val btnDelete = view.findViewById<Button>(R.id.btnDelete)
+        btnDelete.setOnClickListener {
+            meal?.let {
+                log -> mealLogViewModel?.delete(log)
+                dismiss()
+            }
+        }
+
         return view
     }
 
     companion object {
         const val TAG = "MealLogDetailBottomSheet"
 
-        fun newInstance(meal: MealLog) =
+        fun newInstance(meal: MealLog, mealLogViewModel: MealLogViewModel) =
             MealLogDetailBottomSheet().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_MEAL, meal)
+                    putSerializable(ARG_VIEW_MODEL, mealLogViewModel)
                 }
             }
     }

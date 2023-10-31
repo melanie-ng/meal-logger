@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        updateLogs(today)
+
         // floating action button that redirects user to Add Meal Log form
         val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
         fab.setOnClickListener {
@@ -53,8 +55,6 @@ class MainActivity : AppCompatActivity() {
             // hide keyboard
             hideKeyboard(dateField)
         }
-
-        updateLogs(today)
     }
 
     private fun updateLogs(date: String) {
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showDetails(meal: MealLog) {
-        val mealLogDetailBottomSheet = MealLogDetailBottomSheet.newInstance(meal)
+        val mealLogDetailBottomSheet = MealLogDetailBottomSheet.newInstance(meal, mealLogViewModel)
         mealLogDetailBottomSheet.show(supportFragmentManager, MealLogDetailBottomSheet.TAG)
     }
 

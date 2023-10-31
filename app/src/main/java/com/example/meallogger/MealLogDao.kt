@@ -1,9 +1,6 @@
 package com.example.meallogger
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +13,9 @@ interface MealLogDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(log: MealLog)
+
+    @Delete
+    suspend fun delete(log: MealLog)
 
     @Query("DELETE FROM meal_log_table")
     suspend fun deleteAll()

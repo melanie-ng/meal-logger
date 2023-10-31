@@ -2,8 +2,9 @@ package com.example.meallogger
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
+import java.io.Serializable
 
-class MealLogViewModel(private val repository: MealLogRepository) : ViewModel() {
+class MealLogViewModel(private val repository: MealLogRepository) : ViewModel(), Serializable {
     val allLogs: LiveData<List<MealLog>> = repository.allLogs.asLiveData()
     lateinit var logs: LiveData<List<MealLog>>
 
@@ -13,6 +14,10 @@ class MealLogViewModel(private val repository: MealLogRepository) : ViewModel() 
 
     fun insert(mealLog: MealLog) = viewModelScope.launch {
         repository.insert(mealLog)
+    }
+
+    fun delete(mealLog: MealLog) = viewModelScope.launch {
+        repository.delete(mealLog)
     }
 }
 
