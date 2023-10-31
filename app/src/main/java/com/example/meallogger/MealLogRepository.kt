@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 class MealLogRepository(private val mealLogDao: MealLogDao) {
     val allLogs: Flow<List<MealLog>> = mealLogDao.getAll()
 
+    fun getByDate(date: String): Flow<List<MealLog>> {
+        return mealLogDao.getByDate(date)
+    }
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(mealLog: MealLog) {

@@ -4,8 +4,12 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
 class MealLogViewModel(private val repository: MealLogRepository) : ViewModel() {
-
     val allLogs: LiveData<List<MealLog>> = repository.allLogs.asLiveData()
+    lateinit var logs: LiveData<List<MealLog>>
+
+    fun getByDate(date: String) = viewModelScope.launch {
+        logs = repository.getByDate(date).asLiveData()
+    }
 
     fun insert(mealLog: MealLog) = viewModelScope.launch {
         repository.insert(mealLog)
