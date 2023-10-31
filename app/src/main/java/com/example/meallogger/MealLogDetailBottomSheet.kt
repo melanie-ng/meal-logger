@@ -15,7 +15,7 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //meal = it.getParcelable(ARG_MEAL)
+            meal = it.getParcelable(ARG_MEAL)
         }
     }
 
@@ -52,7 +52,7 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
         fun newInstance(meal: MealLog) =
             MealLogDetailBottomSheet().apply {
                 arguments = Bundle().apply {
-                    //putParcelable(ARG_MEAL, meal)
+                    putParcelable(ARG_MEAL, meal)
                 }
             }
     }
