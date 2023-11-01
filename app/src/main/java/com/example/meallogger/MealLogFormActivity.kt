@@ -11,14 +11,14 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
-class AddMealActivity: AppCompatActivity() {
+class MealLogFormActivity: AppCompatActivity() {
     private val mealLogViewModel: MealLogViewModel by viewModels {
         MealLogViewModelFactory((application as MealLogApplication).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_meal)
+        setContentView(R.layout.activity_meal_log_form)
 
         val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
         val timeField = findViewById<TextInputEditText>(R.id.timeFieldEditText)

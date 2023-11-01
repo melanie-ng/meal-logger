@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         // floating action button that redirects user to Add Meal Log form
         val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
         fab.setOnClickListener {
-            val i = Intent(this, AddMealActivity::class.java)
+            val i = Intent(this, MealLogFormActivity::class.java)
             startActivity(i)
         }
 

@@ -54,7 +54,7 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
 
         val btnEdit = view.findViewById<Button>(R.id.btnEdit)
         btnEdit.setOnClickListener {
-            val i = Intent(activity, AddMealActivity::class.java)
+            val i = Intent(activity, MealLogFormActivity::class.java)
             i.putExtra("meal", meal)
             startActivity(i)
             dismiss()
