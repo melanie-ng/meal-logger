@@ -39,6 +39,10 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
         foodValue.text = meal?.food.toString()
         val caloriesValue = view.findViewById<TextView>(R.id.caloriesValueSheet)
         caloriesValue.text = meal?.calories.toString()
+        if (meal?.unit == "kJ") {
+            val caloriesUnit = view.findViewById<TextView>(R.id.caloriesUnitSheet)
+            caloriesUnit.text = getString(R.string.kj)
+        }
         val categoryValue = view.findViewById<TextView>(R.id.categoryValueSheet)
         categoryValue.text = meal?.category.toString()
         val noteValue = view.findViewById<TextView>(R.id.noteValueSheet)

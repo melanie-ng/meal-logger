@@ -22,6 +22,7 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="cal">\u0020Cal</string>
+    <string name="kj">\u0020kJ</string>
     <string name="at">\u0020at\u0020</string>
     <string name="zero">0</string>
     <string-array name="category_array">
