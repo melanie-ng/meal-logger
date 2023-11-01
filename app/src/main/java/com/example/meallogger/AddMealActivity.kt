@@ -20,12 +20,8 @@ class AddMealActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_meal)
 
-        // prefill date and time fields
         val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
-        dateField.setText(LocalDate.now().toString())
         val timeField = findViewById<TextInputEditText>(R.id.timeFieldEditText)
-        timeField.setText(LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toString())
-
         val foodField = findViewById<TextInputEditText>(R.id.foodFieldEditText)
         val caloriesField = findViewById<TextInputEditText>(R.id.caloriesFieldEditText)
         val unitField = findViewById<MaterialButtonToggleGroup>(R.id.toggleButton)
@@ -33,24 +29,60 @@ class AddMealActivity: AppCompatActivity() {
         val noteField = findViewById<TextInputEditText>(R.id.noteFieldEditText)
 
         val btnAdd = findViewById<Button>(R.id.btnAdd)
-        btnAdd.setOnClickListener {
-            val log = MealLog(
-                0,
-                foodField.text.toString(),
-                dateField.text.toString(),
-                timeField.text.toString(),
-                caloriesField.text.toString().toInt(),
-                findViewById<Button>(unitField.checkedButtonId).text.toString(),
-                categoryField.text.toString(),
-                noteField.text.toString()
-            )
+        val btnCancel = findViewById<Button>(R.id.btnCancel)
 
-            mealLogViewModel.insert(log)
-            finish()
+        val existingLog = intent.getParcelableExtra<MealLog>("meal")
+
+        if (existingLog != null) {
+            dateField.setText(existingLog.date)
+            timeField.setText(existingLog.time)
+            foodField.setText(existingLog.food)
+            caloriesField.setText(existingLog.calories.toString())
+            if (existingLog.unit == "kJ") {
+                unitField.check(R.id.button2)
+            }
+            categoryField.setText(existingLog.category, false)
+            noteField.setText(existingLog.note)
+
+            btnAdd.text = getString(R.string.edit)
+            btnAdd.setOnClickListener {
+                val log = MealLog(
+                    existingLog.id,
+                    foodField.text.toString(),
+                    dateField.text.toString(),
+                    timeField.text.toString(),
+                    caloriesField.text.toString().toInt(),
+                    findViewById<Button>(unitField.checkedButtonId).text.toString(),
+                    categoryField.text.toString(),
+                    noteField.text.toString()
+                )
+
+                mealLogViewModel.update(log)
+                finish()
+            }
+        } else {
+            // prefill date and time fields
+            dateField.setText(LocalDate.now().toString())
+            timeField.setText(LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toString())
+
+            btnAdd.setOnClickListener {
+                val log = MealLog(
+                    0,
+                    foodField.text.toString(),
+                    dateField.text.toString(),
+                    timeField.text.toString(),
+                    caloriesField.text.toString().toInt(),
+                    findViewById<Button>(unitField.checkedButtonId).text.toString(),
+                    categoryField.text.toString(),
+                    noteField.text.toString()
+                )
+
+                mealLogViewModel.insert(log)
+                finish()
+            }
         }
 
         // redirects user back to main activity
-        val btnCancel = findViewById<Button>(R.id.btnCancel)
         btnCancel.setOnClickListener {
             finish()
         }

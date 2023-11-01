@@ -12,6 +12,10 @@ class MealLogViewModel(private val repository: MealLogRepository) : ViewModel(),
         logs = repository.getByDate(date).asLiveData()
     }
 
+    fun update(mealLog: MealLog) = viewModelScope.launch {
+        repository.update(mealLog)
+    }
+
     fun insert(mealLog: MealLog) = viewModelScope.launch {
         repository.insert(mealLog)
     }

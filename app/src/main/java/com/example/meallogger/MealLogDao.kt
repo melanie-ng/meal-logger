@@ -14,6 +14,9 @@ interface MealLogDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(log: MealLog)
 
+    @Update
+    suspend fun update(log: MealLog)
+
     @Delete
     suspend fun delete(log: MealLog)
 

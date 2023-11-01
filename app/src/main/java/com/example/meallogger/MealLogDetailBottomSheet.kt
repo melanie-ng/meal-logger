@@ -1,5 +1,6 @@
 package com.example.meallogger
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +46,14 @@ class MealLogDetailBottomSheet : BottomSheetDialogFragment() {
             noteValue.text = getString(R.string.no_note_recorded)
         } else {
             noteValue.text = meal?.note.toString()
+        }
+
+        val btnEdit = view.findViewById<Button>(R.id.btnEdit)
+        btnEdit.setOnClickListener {
+            val i = Intent(activity, AddMealActivity::class.java)
+            i.putExtra("meal", meal)
+            startActivity(i)
+            dismiss()
         }
 
         val btnDelete = view.findViewById<Button>(R.id.btnDelete)

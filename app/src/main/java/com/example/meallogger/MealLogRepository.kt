@@ -12,6 +12,12 @@ class MealLogRepository(private val mealLogDao: MealLogDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun update(mealLog: MealLog) {
+        mealLogDao.update(mealLog)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun delete(mealLog: MealLog) {
         mealLogDao.delete(mealLog)
     }
