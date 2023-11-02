@@ -6,12 +6,18 @@ import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class MealLogFormActivity: AppCompatActivity() {
+    private val localDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
     private val mealLogViewModel: MealLogViewModel by viewModels {
         MealLogViewModelFactory((application as MealLogApplication).repository)
     }
@@ -30,6 +36,21 @@ class MealLogFormActivity: AppCompatActivity() {
 
         val btnAdd = findViewById<Button>(R.id.btnAdd)
         val btnCancel = findViewById<Button>(R.id.btnCancel)
+
+        val datePicker =
+            MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+        val dateFieldLayout = findViewById<TextInputLayout>(R.id.textField)
+        dateFieldLayout.setEndIconOnClickListener {
+            datePicker.show(supportFragmentManager, "tag")
+        }
+
+        datePicker.addOnPositiveButtonClickListener {
+            dateField.setText(datePickerFormatter.format(datePicker.selection))
+        }
 
         val existingLog = intent.getParcelableExtra<MealLog>("meal")
 
@@ -62,7 +83,7 @@ class MealLogFormActivity: AppCompatActivity() {
             }
         } else {
             // prefill date and time fields
-            dateField.setText(LocalDate.now().toString())
+            dateField.setText(LocalDate.now().format(localDateFormatter))
             timeField.setText(LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toString())
 
             btnAdd.setOnClickListener {

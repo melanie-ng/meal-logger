@@ -30,15 +30,15 @@ public abstract class MealLogDatabase : RoomDatabase() {
             mealLogDao.deleteAll()
 
             val meals = mutableListOf(
-                MealLog(1, "Pasta", "2023-10-23", "10:46:00", 500, "Cal", "Meal", "Bolognese pasta"),
-                MealLog(2, "Donut", "2023-10-23", "15:31:00", 250, "Cal", "Snack", "Donutella from Levain"),
-                MealLog(3, "Fried Rice", "2023-10-23", "18:45:00", 435, "Cal", "Meal", "Cooked at home"),
-                MealLog(4, "Peanut Butter Sandwich", "2023-10-24", "10:46:00", 267, "Cal", "Meal", "Used Woolworths White Soft Sandwich Bread"),
-                MealLog(5, "Pizza", "2023-10-24", "15:31:00", 1050, "kJ", "Meal", "Had 1 slice of pepperoni pizza"),
-                MealLog(6, "Ramen", "2023-10-24", "18:45:00", 385, "kJ", "Meal", "Cintan curry flavour"),
-                MealLog(7, "Chocolate", "2023-10-25", "10:46:00", 85, "Cal", "Snack", "Cadbury milk chocolate"),
-                MealLog(8, "Ping Pong Crackers", "2023-10-25", "15:31:00", 250, "Cal", "Snack", "Had 3 pieces"),
-                MealLog(9, "Pringles", "2023-10-30", "18:45:00", 856, "Cal", "Snack", "")
+                MealLog(1, "Pasta", "23/10/2023", "10:46:00", 500, "Cal", "Meal", "Bolognese pasta"),
+                MealLog(2, "Donut", "23/10/2023", "15:31:00", 250, "Cal", "Snack", "Donutella from Levain"),
+                MealLog(3, "Fried Rice", "23/10/2023", "18:45:00", 435, "Cal", "Meal", "Cooked at home"),
+                MealLog(4, "Peanut Butter Sandwich", "24/10/2023", "10:46:00", 267, "Cal", "Meal", "Used Woolworths White Soft Sandwich Bread"),
+                MealLog(5, "Pizza", "24/10/2023", "15:31:00", 1050, "kJ", "Meal", "Had 1 slice of pepperoni pizza"),
+                MealLog(6, "Ramen", "24/10/2023", "18:45:00", 385, "kJ", "Meal", "Cintan curry flavour"),
+                MealLog(7, "Chocolate", "25/10/2023", "10:46:00", 85, "Cal", "Snack", "Cadbury milk chocolate"),
+                MealLog(8, "Ping Pong Crackers", "25/10/2023", "15:31:00", 250, "Cal", "Snack", "Had 3 pieces"),
+                MealLog(9, "Pringles", "25/10/2023", "18:45:00", 856, "Cal", "Snack", "")
             )
 
             for (meal in meals) {

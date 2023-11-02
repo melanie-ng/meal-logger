@@ -11,12 +11,18 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
-    private val today = LocalDate.now().toString()
+    private val localDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
+    private val today = LocalDate.now().format(localDateFormatter)
     private val mealLogViewModel: MealLogViewModel by viewModels {
         MealLogViewModelFactory((application as MealLogApplication).repository)
     }
@@ -43,6 +49,21 @@ class MainActivity : AppCompatActivity() {
             if (!hasFocus) {
                 hideKeyboard(view)
             }
+        }
+
+        val datePicker =
+            MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+        val dateFieldLayout = findViewById<TextInputLayout>(R.id.dateField)
+        dateFieldLayout.setEndIconOnClickListener {
+            datePicker.show(supportFragmentManager, "tag")
+        }
+
+        datePicker.addOnPositiveButtonClickListener {
+            dateField.setText(datePickerFormatter.format(datePicker.selection))
         }
 
         // display appropriate logs when button is pressed
