@@ -8,21 +8,17 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
-    private val localDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    private val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
-    private val today = LocalDate.now().format(localDateFormatter)
     private val mealLogViewModel: MealLogViewModel by viewModels {
         MealLogViewModelFactory((application as MealLogApplication).repository)
     }
@@ -31,18 +27,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        updateLogs(today)
-
-        // floating action button that redirects user to Add Meal Log form
+        val dateFieldLayout = findViewById<TextInputLayout>(R.id.dateField)
+        val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
+        val btnGo = findViewById<Button>(R.id.btnGo)
         val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
-        fab.setOnClickListener {
-            val i = Intent(this, MealLogFormActivity::class.java)
-            startActivity(i)
+
+        val datePicker =
+            MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+        datePicker.addOnPositiveButtonClickListener {
+            dateField.setText(SharedHelper.datePickerFormatter.format(datePicker.selection))
+        }
+
+        // display today's logs when app initially launches
+        updateLogs(SharedHelper.today)
+
+        // prevent error icon from hiding the calendar icon (date picker)
+        dateFieldLayout.errorIconDrawable = null
+
+        dateFieldLayout.setEndIconOnClickListener {
+            datePicker.show(supportFragmentManager, "tag")
         }
 
         // prefill date field with today's date
-        val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
-        dateField.setText(today)
+        dateField.setText(SharedHelper.today)
 
         // hide keyboard when enter is pressed
         dateField.setOnFocusChangeListener { view, hasFocus ->
@@ -51,30 +62,34 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val datePicker =
-            MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-
-        val dateFieldLayout = findViewById<TextInputLayout>(R.id.dateField)
-        dateFieldLayout.setEndIconOnClickListener {
-            datePicker.show(supportFragmentManager, "tag")
-        }
-
-        datePicker.addOnPositiveButtonClickListener {
-            dateField.setText(datePickerFormatter.format(datePicker.selection))
-        }
-
         // display appropriate logs when button is pressed
-        val btnGo = findViewById<Button>(R.id.btnGo)
         btnGo.setOnClickListener {
-            updateLogs(dateField.text.toString())
+            val input = dateField.text.toString().trim()
 
-            // clear text field focus
-            dateField.clearFocus()
-            // hide keyboard
-            hideKeyboard(dateField)
+            if (!SharedHelper.validDate(input)) {
+                dateFieldLayout.error = "Please enter a valid date (DD/MM/YYYY)"
+
+                dateField.addTextChangedListener {
+                    dateFieldLayout.error = null
+                }
+            } else {
+                updateLogs(input)
+
+                dateField.clearFocus()
+                hideKeyboard(dateField)
+
+                Toast.makeText(
+                    this,
+                    "Displaying logs for $input",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        // floating action button that redirects user to Add Meal Log form
+        fab.setOnClickListener {
+            val i = Intent(this, MealLogFormActivity::class.java)
+            startActivity(i)
         }
     }
 
