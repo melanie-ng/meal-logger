@@ -5,19 +5,17 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.text.SimpleDateFormat
-import java.time.LocalDate
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
+import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class MealLogFormActivity: AppCompatActivity() {
-    private val localDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    private val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
     private val mealLogViewModel: MealLogViewModel by viewModels {
         MealLogViewModelFactory((application as MealLogApplication).repository)
     }
@@ -26,14 +24,17 @@ class MealLogFormActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meal_log_form)
 
+        val existingLog = intent.getParcelableExtra<MealLog>("meal")
+
+        val dateFieldLayout = findViewById<TextInputLayout>(R.id.textField)
         val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
+        val timeFieldLayout = findViewById<TextInputLayout>(R.id.timeField)
         val timeField = findViewById<TextInputEditText>(R.id.timeFieldEditText)
         val foodField = findViewById<TextInputEditText>(R.id.foodFieldEditText)
         val caloriesField = findViewById<TextInputEditText>(R.id.caloriesFieldEditText)
         val unitField = findViewById<MaterialButtonToggleGroup>(R.id.toggleButton)
         val categoryField = findViewById<AutoCompleteTextView>(R.id.categoryFieldDropdown)
         val noteField = findViewById<TextInputEditText>(R.id.noteFieldEditText)
-
         val btnAdd = findViewById<Button>(R.id.btnAdd)
         val btnCancel = findViewById<Button>(R.id.btnCancel)
 
@@ -43,16 +44,34 @@ class MealLogFormActivity: AppCompatActivity() {
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
 
-        val dateFieldLayout = findViewById<TextInputLayout>(R.id.textField)
+        datePicker.addOnPositiveButtonClickListener {
+            dateField.setText(SharedHelper.datePickerFormatter.format(datePicker.selection))
+        }
+
+        val timePicker =
+            MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setHour(LocalTime.now().hour)
+                .setMinute(LocalTime.now().minute)
+                .setTitleText("Select time")
+                .setInputMode(INPUT_MODE_CLOCK)
+                .build()
+
+        timePicker.addOnPositiveButtonClickListener {
+            timeField.setText(String.format("%02d:%02d", timePicker.hour, timePicker.minute))
+        }
+
+        dateFieldLayout.errorIconDrawable = null
+
         dateFieldLayout.setEndIconOnClickListener {
             datePicker.show(supportFragmentManager, "tag")
         }
 
-        datePicker.addOnPositiveButtonClickListener {
-            dateField.setText(datePickerFormatter.format(datePicker.selection))
-        }
+        timeFieldLayout.errorIconDrawable = null
 
-        val existingLog = intent.getParcelableExtra<MealLog>("meal")
+        timeFieldLayout.setEndIconOnClickListener {
+            timePicker.show(supportFragmentManager, "tag")
+        }
 
         if (existingLog != null) {
             dateField.setText(existingLog.date)
@@ -67,6 +86,7 @@ class MealLogFormActivity: AppCompatActivity() {
 
             btnAdd.text = getString(R.string.edit)
             btnAdd.setOnClickListener {
+
                 val log = MealLog(
                     existingLog.id,
                     foodField.text.toString(),
@@ -83,23 +103,45 @@ class MealLogFormActivity: AppCompatActivity() {
             }
         } else {
             // prefill date and time fields
-            dateField.setText(LocalDate.now().format(localDateFormatter))
-            timeField.setText(LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toString())
+            dateField.setText(SharedHelper.todayDate)
+            timeField.setText(LocalTime.now().hour.toString() + ":" + LocalTime.now().minute.toString())
 
             btnAdd.setOnClickListener {
-                val log = MealLog(
-                    0,
-                    foodField.text.toString(),
-                    dateField.text.toString(),
-                    timeField.text.toString(),
-                    caloriesField.text.toString().toInt(),
-                    findViewById<Button>(unitField.checkedButtonId).text.toString(),
-                    categoryField.text.toString(),
-                    noteField.text.toString()
-                )
+                var proceed: Boolean = true
 
-                mealLogViewModel.insert(log)
-                finish()
+                if (!SharedHelper.validDate(dateField.text.toString())) {
+                    proceed = false
+                    dateFieldLayout.error = "Please enter a valid date"
+
+                    dateField.addTextChangedListener {
+                        dateFieldLayout.error = null
+                    }
+                }
+
+                if (!SharedHelper.validTime(timeField.text.toString())) {
+                    proceed = false
+                    timeFieldLayout.error = "Please enter a valid time"
+
+                    timeField.addTextChangedListener {
+                        timeFieldLayout.error = null
+                    }
+                }
+
+                if (proceed) {
+                    val log = MealLog(
+                        0,
+                        foodField.text.toString(),
+                        dateField.text.toString(),
+                        timeField.text.toString(),
+                        caloriesField.text.toString().toInt(),
+                        findViewById<Button>(unitField.checkedButtonId).text.toString(),
+                        categoryField.text.toString(),
+                        noteField.text.toString()
+                    )
+
+                    mealLogViewModel.insert(log)
+                    finish()
+                }
             }
         }
 

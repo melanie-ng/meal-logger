@@ -8,12 +8,23 @@ import java.time.format.DateTimeParseException
 class SharedHelper {
     companion object {
         private val localDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        private val localTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
-        val today: String = LocalDate.now().format(localDateFormatter)
+        val todayDate: String = LocalDate.now().format(localDateFormatter)
 
         fun validDate(date: String): Boolean {
             try {
                 localDateFormatter.parse(date)
+            } catch(e: DateTimeParseException) {
+                return false
+            }
+
+            return true
+        }
+
+        fun validTime(time: String): Boolean {
+            try {
+                localTimeFormatter.parse(time)
             } catch(e: DateTimeParseException) {
                 return false
             }

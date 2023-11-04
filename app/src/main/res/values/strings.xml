@@ -34,6 +34,7 @@
     <string name="edit">Edit</string>
     <!-- misc -->
     <string name="date_picker">Date Picker</string>
+    <string name="time_picker">Time Picker</string>
     <string name="at">\u0020at\u0020</string>
     <string name="zero">0</string>
 </resources>

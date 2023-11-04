@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // display today's logs when app initially launches
-        updateLogs(SharedHelper.today)
+        updateLogs(SharedHelper.todayDate)
 
         // prevent error icon from hiding the calendar icon (date picker)
         dateFieldLayout.errorIconDrawable = null
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // prefill date field with today's date
-        dateField.setText(SharedHelper.today)
+        dateField.setText(SharedHelper.todayDate)
 
         // hide keyboard when enter is pressed
         dateField.setOnFocusChangeListener { view, hasFocus ->
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             val input = dateField.text.toString().trim()
 
             if (!SharedHelper.validDate(input)) {
-                dateFieldLayout.error = "Please enter a valid date (DD/MM/YYYY)"
+                dateFieldLayout.error = "Please enter a valid date"
 
                 dateField.addTextChangedListener {
                     dateFieldLayout.error = null
