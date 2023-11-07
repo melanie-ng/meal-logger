@@ -14,6 +14,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalTime
+import java.util.*
 
 class MealLogFormActivity: AppCompatActivity() {
     private val mealLogViewModel: MealLogViewModel by viewModels {
@@ -30,50 +31,69 @@ class MealLogFormActivity: AppCompatActivity() {
         val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
         val timeFieldLayout = findViewById<TextInputLayout>(R.id.timeField)
         val timeField = findViewById<TextInputEditText>(R.id.timeFieldEditText)
+        val foodFieldLayout = findViewById<TextInputLayout>(R.id.foodField)
         val foodField = findViewById<TextInputEditText>(R.id.foodFieldEditText)
+        val caloriesFieldLayout = findViewById<TextInputLayout>(R.id.caloriesField)
         val caloriesField = findViewById<TextInputEditText>(R.id.caloriesFieldEditText)
         val unitField = findViewById<MaterialButtonToggleGroup>(R.id.toggleButton)
+        val categoryFieldLayout = findViewById<TextInputLayout>(R.id.categoryField)
         val categoryField = findViewById<AutoCompleteTextView>(R.id.categoryFieldDropdown)
         val noteField = findViewById<TextInputEditText>(R.id.noteFieldEditText)
         val btnAdd = findViewById<Button>(R.id.btnAdd)
         val btnCancel = findViewById<Button>(R.id.btnCancel)
 
-        val datePicker =
-            MaterialDatePicker.Builder.datePicker()
+        var datePicker: MaterialDatePicker<Long>?
+        var timePicker: MaterialTimePicker?
+
+        dateFieldLayout.errorIconDrawable = null
+        timeFieldLayout.errorIconDrawable = null
+        foodFieldLayout.errorIconDrawable = null
+        caloriesFieldLayout.errorIconDrawable = null
+
+        if (existingLog == null) {
+            // set up add meal log form
+            val todayTimeHour = LocalTime.now().hour
+            val todayTimeMinute = LocalTime.now().minute
+
+            datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select date")
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
 
-        datePicker.addOnPositiveButtonClickListener {
-            dateField.setText(SharedHelper.datePickerFormatter.format(datePicker.selection))
-        }
+            timePicker = MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(todayTimeHour)
+                    .setMinute(todayTimeMinute)
+                    .setTitleText("Select time")
+                    .setInputMode(INPUT_MODE_CLOCK)
+                    .build()
 
-        val timePicker =
-            MaterialTimePicker.Builder()
+            dateField.setText(SharedHelper.todayDate)
+            timeField.setText(String.format("%02d:%02d", todayTimeHour, todayTimeMinute))
+        } else {
+            // set up edit meal log form
+            btnAdd.text = getString(R.string.edit)
+
+            SharedHelper.datePickerFormatter.timeZone = TimeZone.getTimeZone("UTC")
+
+            val logDate = SharedHelper.datePickerFormatter.parse(existingLog.date).time
+            val logTime = LocalTime.parse(existingLog.time)
+            val logTimeHour = logTime.hour
+            val logTimeMinute = logTime.minute
+
+            datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(logDate)
+                .build()
+
+            timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
-                .setHour(LocalTime.now().hour)
-                .setMinute(LocalTime.now().minute)
+                .setHour(logTimeHour)
+                .setMinute(logTimeMinute)
                 .setTitleText("Select time")
                 .setInputMode(INPUT_MODE_CLOCK)
                 .build()
 
-        timePicker.addOnPositiveButtonClickListener {
-            timeField.setText(String.format("%02d:%02d", timePicker.hour, timePicker.minute))
-        }
-
-        dateFieldLayout.errorIconDrawable = null
-
-        dateFieldLayout.setEndIconOnClickListener {
-            datePicker.show(supportFragmentManager, "tag")
-        }
-
-        timeFieldLayout.errorIconDrawable = null
-
-        timeFieldLayout.setEndIconOnClickListener {
-            timePicker.show(supportFragmentManager, "tag")
-        }
-
-        if (existingLog != null) {
             dateField.setText(existingLog.date)
             timeField.setText(existingLog.time)
             foodField.setText(existingLog.food)
@@ -83,65 +103,94 @@ class MealLogFormActivity: AppCompatActivity() {
             }
             categoryField.setText(existingLog.category, false)
             noteField.setText(existingLog.note)
+        }
 
-            btnAdd.text = getString(R.string.edit)
-            btnAdd.setOnClickListener {
+        datePicker.addOnPositiveButtonClickListener {
+            dateField.setText(SharedHelper.datePickerFormatter.format(datePicker.selection))
+        }
 
-                val log = MealLog(
-                    existingLog.id,
-                    foodField.text.toString(),
-                    dateField.text.toString(),
-                    timeField.text.toString(),
-                    caloriesField.text.toString().toInt(),
-                    findViewById<Button>(unitField.checkedButtonId).text.toString(),
-                    categoryField.text.toString(),
-                    noteField.text.toString()
-                )
+        dateFieldLayout.setEndIconOnClickListener {
+            datePicker.show(supportFragmentManager, "tag")
+        }
 
-                mealLogViewModel.update(log)
-                finish()
+        timePicker.addOnPositiveButtonClickListener {
+            timeField.setText(String.format("%02d:%02d", timePicker.hour, timePicker.minute))
+        }
+
+        timeFieldLayout.setEndIconOnClickListener {
+            timePicker.show(supportFragmentManager, "tag")
+        }
+
+        btnAdd.setOnClickListener {
+            var proceed = true
+
+            val id = existingLog?.id ?: 0
+            val food = foodField.text.toString().trim()
+            val date = dateField.text.toString().trim()
+            val time = timeField.text.toString().trim()
+            val calories = caloriesField.text.toString()
+            val unit = findViewById<Button>(unitField.checkedButtonId).text.toString()
+            val category = categoryField.text.toString()
+            val note = noteField.text.toString().trim()
+
+            if (food == "") {
+                proceed = false
+
+                foodFieldLayout.error = "Please enter the name of the food"
+
+                foodField.addTextChangedListener {
+                    foodFieldLayout.error = null
+                }
             }
-        } else {
-            // prefill date and time fields
-            dateField.setText(SharedHelper.todayDate)
-            timeField.setText(LocalTime.now().hour.toString() + ":" + LocalTime.now().minute.toString())
 
-            btnAdd.setOnClickListener {
-                var proceed: Boolean = true
+            if (!SharedHelper.validDate(date)) {
+                proceed = false
+                dateFieldLayout.error = "Please enter a valid date"
 
-                if (!SharedHelper.validDate(dateField.text.toString())) {
-                    proceed = false
-                    dateFieldLayout.error = "Please enter a valid date"
-
-                    dateField.addTextChangedListener {
-                        dateFieldLayout.error = null
-                    }
+                dateField.addTextChangedListener {
+                    dateFieldLayout.error = null
                 }
+            }
 
-                if (!SharedHelper.validTime(timeField.text.toString())) {
-                    proceed = false
-                    timeFieldLayout.error = "Please enter a valid time"
+            if (!SharedHelper.validTime(time)) {
+                proceed = false
+                timeFieldLayout.error = "Please enter a valid time"
 
-                    timeField.addTextChangedListener {
-                        timeFieldLayout.error = null
-                    }
+                timeField.addTextChangedListener {
+                    timeFieldLayout.error = null
                 }
+            }
 
-                if (proceed) {
-                    val log = MealLog(
-                        0,
-                        foodField.text.toString(),
-                        dateField.text.toString(),
-                        timeField.text.toString(),
-                        caloriesField.text.toString().toInt(),
-                        findViewById<Button>(unitField.checkedButtonId).text.toString(),
-                        categoryField.text.toString(),
-                        noteField.text.toString()
-                    )
+            if (calories == "") {
+                proceed = false
 
+                caloriesFieldLayout.error = "Please enter the number of calories"
+
+                caloriesField.addTextChangedListener {
+                    caloriesFieldLayout.error = null
+                }
+            }
+
+            if (category == "") {
+                proceed = false
+
+                categoryFieldLayout.error = "Please select a category"
+
+                categoryField.addTextChangedListener {
+                    categoryFieldLayout.error = null
+                }
+            }
+
+            if (proceed) {
+                val log = MealLog(id, food, date, time, calories.toInt(), unit, category, note)
+
+                if (existingLog == null) {
                     mealLogViewModel.insert(log)
-                    finish()
+                } else {
+                    mealLogViewModel.update(log)
                 }
+
+                finish()
             }
         }
 
