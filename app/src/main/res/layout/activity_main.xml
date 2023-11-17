@@ -6,44 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dateField"
-        style="?attr/textInputOutlinedStyle"
-        android:layout_width="0dp"
+    <com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:hint="@string/date_form_label"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_baseline_calendar_today_24"
-        app:endIconContentDescription="@string/date_picker"
-        app:helperTextEnabled="true"
-        app:helperText="DD/MM/YYYY"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toStartOf="@+id/btnGo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/dateFieldEditText"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/btnGo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        android:text="@string/go"
-        app:layout_constraintBottom_toBottomOf="@+id/dateField"
+        app:buttonLeft_drawableTintColor="?colorOnPrimary"
+        app:buttonRight_drawableTintColor="?colorOnPrimary"
+        app:expandIconColor="?colorOnPrimary"
+        app:primaryColor="?colorPrimary"
+        app:selectedItem_background="@drawable/circle_white_solid_background"
+        app:selectedItem_textColor="?colorPrimary"
+        app:textColor="?colorOnPrimary"
+        app:todayItem_background="@drawable/circle_white_stroke_background"
+        app:todayItem_textColor="?colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dateField" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/mealsLabel"
@@ -53,7 +31,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/meals"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateField" />
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
     <TextView
         android:id="@+id/numOfMeals"

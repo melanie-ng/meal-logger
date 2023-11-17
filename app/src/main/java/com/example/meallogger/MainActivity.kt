@@ -2,21 +2,22 @@ package com.example.meallogger
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.shrikanthravi.collapsiblecalendarview.data.Day
+import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
+import java.time.LocalDate
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private val mealLogViewModel: MealLogViewModel by viewModels {
@@ -27,64 +28,27 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val dateFieldLayout = findViewById<TextInputLayout>(R.id.dateField)
-        val dateField = findViewById<TextInputEditText>(R.id.dateFieldEditText)
-        val btnGo = findViewById<Button>(R.id.btnGo)
+        val calendar = findViewById<CollapsibleCalendar>(R.id.calendarView)
         val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
-
-        val datePicker =
-            MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-
-        datePicker.addOnPositiveButtonClickListener {
-            dateField.setText(SharedHelper.datePickerFormatter.format(datePicker.selection))
-        }
 
         // display today's logs when app initially launches
         updateLogs(SharedHelper.todayDate)
 
-        // prevent error icon from hiding the calendar icon (date picker)
-        dateFieldLayout.errorIconDrawable = null
+        calendar.setCalendarListener(object: CollapsibleCalendar.CalendarListener {
+            override fun onDaySelect() {
+                val day = calendar.selectedDay!!
+                val input = String.format("%02d/%02d/%02d", day.day, day.month + 1, day.year)
 
-        dateFieldLayout.setEndIconOnClickListener {
-            datePicker.show(supportFragmentManager, "tag")
-        }
-
-        // prefill date field with today's date
-        dateField.setText(SharedHelper.todayDate)
-
-        // hide keyboard when enter is pressed
-        dateField.setOnFocusChangeListener { view, hasFocus ->
-            if (!hasFocus) {
-                hideKeyboard(view)
-            }
-        }
-
-        // display appropriate logs when button is pressed
-        btnGo.setOnClickListener {
-            val input = dateField.text.toString().trim()
-
-            if (!SharedHelper.validDate(input)) {
-                dateFieldLayout.error = "Please enter a valid date"
-
-                dateField.addTextChangedListener {
-                    dateFieldLayout.error = null
-                }
-            } else {
                 updateLogs(input)
-
-                dateField.clearFocus()
-                hideKeyboard(dateField)
-
-                Toast.makeText(
-                    this,
-                    "Displaying logs for $input",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
-        }
+
+            override fun onItemClick(v: View) {}
+            override fun onClickListener() {}
+            override fun onDataUpdate() {}
+            override fun onDayChanged() {}
+            override fun onWeekChange(position: Int) {}
+            override fun onMonthChange() {}
+        })
 
         // floating action button that redirects user to Add Meal Log form
         fab.setOnClickListener {
