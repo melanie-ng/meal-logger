@@ -11,6 +11,7 @@ class SharedHelper {
         private val localTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val datePickerFormatter = SimpleDateFormat("dd/MM/yyyy")
         val todayDate: String = LocalDate.now().format(localDateFormatter)
+        var date: String = todayDate
 
         fun validDate(date: String): Boolean {
             try {

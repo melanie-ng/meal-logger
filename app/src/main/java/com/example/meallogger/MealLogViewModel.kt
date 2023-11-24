@@ -1,15 +1,16 @@
 package com.example.meallogger
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
 class MealLogViewModel(private val repository: MealLogRepository) : ViewModel(), Serializable {
-    val allLogs: LiveData<List<MealLog>> = repository.allLogs.asLiveData()
-    lateinit var logs: LiveData<List<MealLog>>
+    private val _logs = MutableLiveData<List<MealLog>>().apply { value = emptyList() }
+    val logs: LiveData<List<MealLog>> get() = _logs
 
     fun getByDate(date: String) = viewModelScope.launch {
-        logs = repository.getByDate(date).asLiveData()
+        _logs.value = repository.getByDate(date).firstOrNull() ?: emptyList()
     }
 
     fun update(mealLog: MealLog) = viewModelScope.launch {
@@ -22,6 +23,9 @@ class MealLogViewModel(private val repository: MealLogRepository) : ViewModel(),
 
     fun delete(mealLog: MealLog) = viewModelScope.launch {
         repository.delete(mealLog)
+        if (mealLog.date == SharedHelper.date) {
+            _logs.value = repository.getByDate(SharedHelper.date).firstOrNull() ?: emptyList()
+        }
     }
 }
 

@@ -30,16 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         val calendar = findViewById<CollapsibleCalendar>(R.id.calendarView)
         val fab = findViewById<FloatingActionButton>(R.id.floating_action_button)
-
-        // display today's logs when app initially launches
-        updateLogs(SharedHelper.todayDate)
+        val noMealLogs = findViewById<TextView>(R.id.noMealLogs)
+        val mealLogs = findViewById<RecyclerView>(R.id.mealLogs)
 
         calendar.setCalendarListener(object: CollapsibleCalendar.CalendarListener {
             override fun onDaySelect() {
                 val day = calendar.selectedDay!!
-                val input = String.format("%02d/%02d/%02d", day.day, day.month + 1, day.year)
+                SharedHelper.date = String.format("%02d/%02d/%02d", day.day, day.month + 1, day.year)
 
-                updateLogs(input)
+                updateLogs(SharedHelper.date)
             }
 
             override fun onItemClick(v: View) {}
@@ -55,71 +54,69 @@ class MainActivity : AppCompatActivity() {
             val i = Intent(this, MealLogFormActivity::class.java)
             startActivity(i)
         }
-    }
 
-    private fun updateLogs(date: String) {
-        val noMealLogs = findViewById<TextView>(R.id.noMealLogs)
-        val mealLogs = findViewById<RecyclerView>(R.id.mealLogs)
-
-        val mealLogsAdapter = MealLogsAdapter { showDetails(it) }
+        var mealLogsAdapter = MealLogsAdapter { showDetails(it) }
         mealLogs.adapter = mealLogsAdapter
         mealLogs.layoutManager = LinearLayoutManager(this)
 
-        mealLogViewModel.getByDate(date)
-
         mealLogViewModel.logs.observe(this) { logs ->
-            logs?.let {
-                val tvNumOfMeals = findViewById<TextView>(R.id.numOfMeals)
-                val tvNumOfSnacks = findViewById<TextView>(R.id.numOfSnacks)
-                val tvTotalCalories = findViewById<TextView>(R.id.totalCalories)
+            val tvNumOfMeals = findViewById<TextView>(R.id.numOfMeals)
+            val tvNumOfSnacks = findViewById<TextView>(R.id.numOfSnacks)
+            val tvTotalCalories = findViewById<TextView>(R.id.totalCalories)
 
-                var numOfMeals = 0
-                var numOfSnacks = 0
-                var totalCalories = 0.0
+            var numOfMeals = 0
+            var numOfSnacks = 0
+            var totalCalories = 0.0
 
-                if (it.isEmpty()) {
-                    mealLogs.visibility = View.GONE
-                    noMealLogs.visibility = View.VISIBLE
-                } else {
-                    mealLogsAdapter.submitList(it)
-                    var tempCalories: Double
+            if (logs.isEmpty()) {
+                mealLogs.visibility = View.GONE
+                noMealLogs.visibility = View.VISIBLE
+            } else {
+                mealLogsAdapter.submitList(logs)
+                var tempCalories: Double
 
-                    // calculate total meals, snacks, and calories
-                    for (meal in it) {
-                        if (meal.category == "Meal") {
-                            numOfMeals++
-                        } else {
-                            numOfSnacks++
-                        }
-
-                        // convert kJ to Cal
-                        if (meal.unit == "kJ") {
-                            tempCalories = meal.calories / 4.184
-                        } else {
-                            tempCalories = meal.calories.toDouble()
-                        }
-
-                        totalCalories += tempCalories
+                // calculate total meals, snacks, and calories
+                for (meal in logs) {
+                    if (meal.category == "Meal") {
+                        numOfMeals++
+                    } else {
+                        numOfSnacks++
                     }
 
-                    mealLogs.visibility = View.VISIBLE
-                    noMealLogs.visibility = View.GONE
+                    // convert kJ to Cal
+                    if (meal.unit == "kJ") {
+                        tempCalories = meal.calories / 4.184
+                    } else {
+                        tempCalories = meal.calories.toDouble()
+                    }
+
+                    totalCalories += tempCalories
                 }
 
-                tvNumOfMeals.text = numOfMeals.toString()
-                tvNumOfSnacks.text = numOfSnacks.toString()
-                tvTotalCalories.text = String.format("%.0f", totalCalories)
+                mealLogs.visibility = View.VISIBLE
+                noMealLogs.visibility = View.GONE
             }
+
+            tvNumOfMeals.text = numOfMeals.toString()
+            tvNumOfSnacks.text = numOfSnacks.toString()
+            tvTotalCalories.text = String.format("%.0f", totalCalories)
         }
+
+        // display today's logs when app initially launches
+        updateLogs(SharedHelper.date)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateLogs(SharedHelper.date)
+    }
+
+    private fun updateLogs(date: String) {
+        mealLogViewModel.getByDate(date)
     }
 
     private fun showDetails(meal: MealLog) {
         val mealLogDetailBottomSheet = MealLogDetailBottomSheet.newInstance(meal, mealLogViewModel)
         mealLogDetailBottomSheet.show(supportFragmentManager, MealLogDetailBottomSheet.TAG)
-    }
-
-    private fun hideKeyboard(view: View) {
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
