@@ -8,7 +8,7 @@ interface MealLogDao {
     @Query("SELECT * FROM meal_log_table")
     fun getAll(): Flow<List<MealLog>>
 
-    @Query("SELECT * FROM meal_log_table WHERE date = :date")
+    @Query("SELECT * FROM meal_log_table WHERE date = :date ORDER BY time")
     fun getByDate(date: String): Flow<List<MealLog>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
